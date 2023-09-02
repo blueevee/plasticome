@@ -1,0 +1,16 @@
+site_name: Plasticome
+repo_url: https://github.com/blueevee/plasticome
+repo_name: blueevee/plasticome
+edit: tree/main/docs
+
+theme:
+  name: material
+  language: pt-br
+  logo: assets/temp-logo.jpg
+  favicon: assets/temp-logo.jpg
+
+markdown_extensions:
+  - attr_list
+
+extra_css:
+  - stylesheets/extra.css
