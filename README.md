@@ -25,3 +25,5 @@
 `task docs`: Serve a documentação
 
 `task teste`: Executa os testes da aplicação
+
+`task run`: Executa o servidor flask

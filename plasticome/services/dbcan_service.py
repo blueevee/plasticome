@@ -24,14 +24,12 @@ def run_dbcan_container(absolute_mount_dir):
 
     # local_mount_dir = local_mount_dir.replace('\\', '/')
     command = f'docker run --name dbcan-sub -v "{local_mount_dir}:/app/{docker_mount}" -it haidyi/run_dbcan:latest ./{docker_mount}/{input_file} protein --out_dir ./{docker_mount}/{output_folder_name}'
-    print('========================',command)
-    # docker run --name dbcan2 -v C:/Users/evelyn.ferreira/Documents/eevee/estudos/FACULDADE/TCC/plasticome/plasticome/genomes:/app/genomes -it haidyi/run_dbcan:latest ./genomes/123.faa protein --out_dir ./genomes/output
 
     try:
         subprocess.run(command, shell=True, check=True)
-        return output_folder
+        return output_folder, False
     except subprocess.CalledProcessError as e:
-        return f'Error to execute command: {e}'
+        return False, f'Error to execute command: {e}'
     except Exception as e:
-        return f'Unexpected error: {e}'
+        return False, f'[DBCAN STEP] - Unexpected error: {e}'
 
