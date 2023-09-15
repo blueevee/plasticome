@@ -1,6 +1,8 @@
-import subprocess
 import os
+import subprocess
+
 from ..config.celery_config import celery_app
+
 
 # @celery_app.task
 def run_dbcan_container(absolute_mount_dir):
@@ -32,4 +34,3 @@ def run_dbcan_container(absolute_mount_dir):
         return False, f'Error to execute command: {e}'
     except Exception as e:
         return False, f'[DBCAN STEP] - Unexpected error: {e}'
-
