@@ -24,8 +24,7 @@ def run_dbcan_container(absolute_mount_dir):
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    # local_mount_dir = local_mount_dir.replace('\\', '/')
-    command = f'docker run --name dbcan-sub -v "{local_mount_dir}:/app/{docker_mount}" -it haidyi/run_dbcan:latest ./{docker_mount}/{input_file} protein --out_dir ./{docker_mount}/{output_folder_name}'
+    command = f'docker run -v "{local_mount_dir}:/app/{docker_mount}" -it haidyi/run_dbcan:latest ./{docker_mount}/{input_file} protein --out_dir ./{docker_mount}/{output_folder_name}'
 
     try:
         subprocess.run(command, shell=True, check=True)
