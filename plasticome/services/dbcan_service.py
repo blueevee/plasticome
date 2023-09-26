@@ -1,10 +1,10 @@
-import os
 import docker
+import os
 
 from ..config.celery_config import celery_app
 
 
-# @celery_app.task
+@celery_app.task
 def run_dbcan_container(absolute_mount_dir):
 
     input_file = os.path.basename(absolute_mount_dir)
