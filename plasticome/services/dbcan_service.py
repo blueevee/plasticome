@@ -1,7 +1,7 @@
 import docker
 import os
 
-from ..config.celery_config import celery_app
+from plasticome.config.celery_config import celery_app
 
 
 @celery_app.task
