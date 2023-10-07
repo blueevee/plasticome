@@ -11,13 +11,6 @@ celery_app = Celery(
     include=['plasticome.services.dbcan_service', 'plasticome.services.ecpred_service']
     )
 
-
-@celery_app.task
-def test_task():
-    return "HHHEEELOO CELERY"
-
-
-
 # TODO passos:
 # Quando definir a função usar odecorator @app.task()
 # Quando chamar a função que precisa do celery usar fuction.delay()

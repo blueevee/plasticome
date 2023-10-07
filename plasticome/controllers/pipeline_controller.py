@@ -17,8 +17,10 @@ def execute_main_pipeline(data: dict):
             # )
             # if file_error:
                 # return {'error': file_error}, 500
-            file_path = r"C:\Users\evelyn.ferreira\Documents\eevee\estudos\FACULDADE\TCC\plasticome\results\test.faa"
-            run_dbcan_container.delay(file_path)
+            result_dbcan = run_dbcan_container.delay(file_path)
+            if result_dbcan.ready():
+                result_data = result_dbcan.get()
+                print('RESLTADO DBCAN', result_data)
             # TODO [CELERY] RODAR O DBCAN COM CELERY
             # output_folder, dbcan_error = run_dbcan_container(file_path)
             # if dbcan_error:
