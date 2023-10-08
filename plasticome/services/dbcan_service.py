@@ -23,7 +23,7 @@ def run_dbcan_container(absolute_mount_dir):
     local_mount_dir = os.path.dirname(absolute_mount_dir)
     docker_mount = os.path.basename(local_mount_dir)
 
-    output_folder_name = f'{input_file.split(".")[0]}_dbcan_output'
+    output_folder_name = f'{input_file.split(".")[0]}_results'
     output_folder = os.path.join(local_mount_dir, output_folder_name)
 
     if not os.path.exists(output_folder):
