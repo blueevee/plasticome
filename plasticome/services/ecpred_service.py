@@ -1,5 +1,6 @@
-import docker
 import os
+
+import docker
 
 from plasticome.config.celery_config import celery_app
 
@@ -26,7 +27,9 @@ def run_ecpred_container(absolute_mount_dir):
     docker_mount = os.path.basename(local_mount_dir)
 
     output_folder_name = f'{input_file.split(".")[0]}_results'
-    output_file_path = os.path.join(local_mount_dir, output_folder_name, f'{output_folder_name}.tsv')
+    output_file_path = os.path.join(
+        local_mount_dir, output_folder_name, f'{output_folder_name}.tsv'
+    )
 
     if not os.path.exists(os.path.dirname(output_file_path)):
         os.makedirs(os.path.dirname(output_file_path))
@@ -35,9 +38,17 @@ def run_ecpred_container(absolute_mount_dir):
 
     container_params = {
         'image': 'blueevee/ecpred:latest',
-        'volumes': {local_mount_dir: {'bind': f'/app/{docker_mount}', 'mode': 'rw'}},
+        'volumes': {
+            local_mount_dir: {'bind': f'/app/{docker_mount}', 'mode': 'rw'}
+        },
         'working_dir': '/app',
-        'command': ['spmap', f'./{docker_mount}/{input_file}', './', '/temp', f'./{docker_mount}/{output_folder_name}/{output_folder_name}.tsv'],
+        'command': [
+            'spmap',
+            f'./{docker_mount}/{input_file}',
+            './',
+            '/temp',
+            f'./{docker_mount}/{output_folder_name}/{output_folder_name}.tsv',
+        ],
         'remove': True,
     }
     try:

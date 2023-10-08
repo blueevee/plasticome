@@ -1,7 +1,9 @@
-import docker
 import os
 
+import docker
+
 from plasticome.config.celery_config import celery_app
+
 
 @celery_app.task
 def run_dbcan_container(absolute_mount_dir):
@@ -33,9 +35,16 @@ def run_dbcan_container(absolute_mount_dir):
 
     container_params = {
         'image': 'haidyi/run_dbcan:latest',
-        'volumes': {local_mount_dir: {'bind': f'/app/{docker_mount}', 'mode': 'rw'}},
+        'volumes': {
+            local_mount_dir: {'bind': f'/app/{docker_mount}', 'mode': 'rw'}
+        },
         'working_dir': '/app',
-        'command': [f'./{docker_mount}/{input_file}', 'protein', '--out_dir', f'./{docker_mount}/{output_folder_name}'],
+        'command': [
+            f'./{docker_mount}/{input_file}',
+            'protein',
+            '--out_dir',
+            f'./{docker_mount}/{output_folder_name}',
+        ],
         'remove': True,
     }
     try:
