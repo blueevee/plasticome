@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-import os
-from Bio import Entrez, SeqIO
-from Bio.Seq import UndefinedSequenceError
-=======
 import gzip
 import os
 import shutil
@@ -11,7 +6,6 @@ from ftplib import FTP
 from urllib.parse import urlparse
 
 from Bio import Entrez
->>>>>>> test/celery
 from dotenv import load_dotenv
 
 load_dotenv()

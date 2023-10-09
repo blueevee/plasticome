@@ -49,8 +49,5 @@ docs = "mkdocs serve"
 pre_test = "task lint"
 test = "pytest -s -x --cov=plasticome -vv"
 post_test = "coverage html"
-<<<<<<< HEAD
-=======
 run = "run_flask.bat"
->>>>>>> test/celery
 
