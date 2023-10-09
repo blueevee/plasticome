@@ -83,6 +83,7 @@ def check_ftp_file_existence(ftp_url, file_name):
         return False
 
 
+
 def download_fasta_sequence_by_id(acession_number: str):
     """
     The `download_fasta_sequence_by_id` function downloads a FASTA sequence file
