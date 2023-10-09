@@ -1,6 +1,17 @@
+<<<<<<< HEAD
 import os
 from Bio import Entrez, SeqIO
 from Bio.Seq import UndefinedSequenceError
+=======
+import gzip
+import os
+import shutil
+import urllib.request
+from ftplib import FTP
+from urllib.parse import urlparse
+
+from Bio import Entrez
+>>>>>>> test/celery
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -9,41 +20,152 @@ Entrez.email = os.getenv('ENTREZ_EMAIL')
 
 
 def search_fungi_id_by_name(especie: str):
-    handle = Entrez.esearch(db='protein', term=especie)
+    """
+    The function `search_fungi_id_by_name` searches for the assembly IDs of fungi
+    species based on their names.
+
+    :param especie: The parameter "especie" is a string that represents the name of
+    a species of fungi
+    :type especie: str
+    :return: The function `search_fungi_id_by_name` returns two values:
+    `genbank_assembly_accession` and `refseq_assembly_accession`.
+    """
+    seacrh_term = f'"{especie}"[Organism] AND (latest[filter] AND all[filter] NOT anomalous[filter])'
+    handle = Entrez.esearch(db='assembly', term=seacrh_term, retmax=1)
     record = Entrez.read(handle)
     handle.close()
 
-    return record
+    if record['Count'] > '0':
+        assembly_id = record['IdList'][0]
 
-
-def download_fasta_sequence_by_id(fungi_id: str):
-    try:
-        handle = Entrez.efetch(
-            db='protein', id=fungi_id, rettype='gb', retmode='text'
-        )
-
-        gene_record = SeqIO.read(handle, 'genbank')
+        handle = Entrez.esummary(db='assembly', id=assembly_id)
+        record = Entrez.read(handle)
         handle.close()
 
-        genomes_folder = os.path.join(os.getcwd(), 'temp_genomes')
-        if not os.path.exists(genomes_folder):
-            os.makedirs(genomes_folder)
+        genbank_assembly_accession = record['DocumentSummarySet'][
+            'DocumentSummary'
+        ][0]['AssemblyAccession']
+        refseq_assembly_accession = record['DocumentSummarySet'][
+            'DocumentSummary'
+        ][0]['Synonym']['RefSeq']
 
-        fasta_file = os.path.join(genomes_folder, str(fungi_id))
-        with open(fasta_file, 'w') as f:
-            SeqIO.write(gene_record, f, 'fasta')
+        return genbank_assembly_accession, refseq_assembly_accession
 
-        if os.path.exists(fasta_file) and os.path.getsize(fasta_file) > 0:
-            return fasta_file, False
-        else:
-            return False, 'An error occured try again latter', 503
+    else:
+        return None, None
 
-    except UndefinedSequenceError:
-        return False, f'{gene_record.name} = Gene Sequence is undefined.', 404
+
+def check_ftp_file_existence(ftp_url, file_name):
+    """
+    The function `check_ftp_file_existence` checks if a file exists on an FTP
+    server given the FTP URL and file name.
+
+    :param ftp_url: The `ftp_url` parameter is a string that represents the URL of
+    the FTP server. It should follow the format
+    `ftp://<server_address>/<file_path>`, where `<server_address>` is the address
+    of the FTP server and `<file_path>` is the path to the directory where the file
+    :param file_name: The name of the file you want to check for existence on the
+    FTP server
+    :return: a boolean value indicating whether the specified file exists on the
+    FTP server.
+    """
+    url_parts = urlparse(ftp_url)
+    server_address = url_parts.netloc
+    file_path = url_parts.path
+    try:
+        ftp = FTP(server_address)
+        ftp.login()
+
+        ftp.cwd(file_path)
+        file_list = ftp.nlst()
+        file_exists = file_name in file_list
+
+        ftp.quit()
+
+        return file_exists
+
     except Exception as e:
-        return False, f'[DOWNLOAD FASTA ERROR]: {e}', 400
+        print(f'Error checking FTP file existence: {e}')
+        return False
 
 
-# print(search_fungi_by_name("Fusarium oxysporum mitochondrion" ))
 
-# download_fasta_sequence_by_id(search_fungi_by_name("Fusarium oxysporum mitochondrion" )[0]['fungi_id'])
+def download_fasta_sequence_by_id(acession_number: str):
+    """
+    The `download_fasta_sequence_by_id` function downloads a FASTA sequence file
+    from a given accession number using the Entrez API.
+
+    :param acession_number: The `acession_number` parameter is a string that
+    represents the accession number of a genome assembly. This accession number is
+    used to search for and download the corresponding FASTA sequence file
+    :type acession_number: str
+    :return: The function `download_fasta_sequence_by_id` returns a tuple
+    containing two values. The first value is the path to the downloaded FASTA
+    file, and the second value is a boolean indicating whether the download was
+    successful or not. If there was an error during the download process, the
+    second value will be an error message.
+    """
+    try:
+        temp_genomes_path = os.path.join(os.getcwd(), 'temp_genomes')
+
+        if not os.path.exists(temp_genomes_path):
+            os.makedirs(temp_genomes_path)
+
+        handle = Entrez.esearch(
+            db='assembly',
+            term=f'{acession_number}[Assembly Accession]',
+            retmax=1,
+        )
+
+        record = Entrez.read(handle)
+        handle.close()
+        if not record['IdList']:
+            raise ValueError(
+                'Assembly not found for the given accession number.'
+            )
+
+        assembly_id = record['IdList'][0]
+
+        handle = Entrez.esummary(db='assembly', id=assembly_id)
+        record = Entrez.read(handle)
+        handle.close()
+
+        ftp_url = record['DocumentSummarySet']['DocumentSummary'][0].get(
+            'FtpPath_RefSeq'
+        )
+        if not ftp_url:
+            ftp_url = record['DocumentSummarySet']['DocumentSummary'][0].get(
+                'FtpPath_GenBank'
+            )
+            if not ftp_url:
+                raise ValueError(
+                    'No FTP path found for the given accession number.'
+                )
+
+        fasta_file = ftp_url.split('/')[-1] + '_protein.faa.gz'
+        fasta_url = ftp_url + '/' + fasta_file
+
+        if not check_ftp_file_existence(ftp_url=ftp_url, file_name=fasta_file):
+            raise ValueError(f'File {fasta_file} not found on the FTP server.')
+
+        fasta_folder_path = os.path.join(
+            temp_genomes_path, f'{acession_number}.fasta.gz'
+        )
+
+        if not os.path.exists(fasta_folder_path):
+            urllib.request.urlretrieve(fasta_url, fasta_folder_path)
+
+        fasta_output_path = os.path.join(
+            temp_genomes_path, f'{acession_number}.faa'
+        )
+
+        with gzip.open(fasta_folder_path, 'rb') as f_in:
+            with open(fasta_output_path, 'wb') as f_out:
+                shutil.copyfileobj(f_in, f_out)
+
+        os.remove(fasta_folder_path)
+
+        return fasta_output_path, False
+
+    except Exception as error:
+        return False, error

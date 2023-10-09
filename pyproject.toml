@@ -7,13 +7,16 @@ readme = "README.md"
 packages = [{include = "plasticome"}]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.11"
 biopython = "^1.81"
 taskipy = "^1.12.0"
 flask-pydantic-spec = "^0.4.5"
 python-dotenv = "^1.0.0"
 flask = "^2.3.3"
-celery = "^5.3.3"
+docker = "^6.1.3"
+redis = "^5.0.1"
+celery = "^5.3.4"
+secure-smtplib = "^0.1.1"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -46,4 +49,8 @@ docs = "mkdocs serve"
 pre_test = "task lint"
 test = "pytest -s -x --cov=plasticome -vv"
 post_test = "coverage html"
+<<<<<<< HEAD
+=======
+run = "run_flask.bat"
+>>>>>>> test/celery
 
