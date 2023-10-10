@@ -14,6 +14,16 @@ Entrez.email = os.getenv('ENTREZ_EMAIL')
 
 
 def search_fungi_id_by_name(especie: str):
+    """
+    The function `search_fungi_id_by_name` searches for the assembly IDs of fungi
+    species based on their names.
+
+    :param especie: The parameter "especie" is a string that represents the name of
+    a species of fungi
+    :type especie: str
+    :return: The function `search_fungi_id_by_name` returns two values:
+    `genbank_assembly_accession` and `refseq_assembly_accession`.
+    """
     seacrh_term = f'"{especie}"[Organism] AND (latest[filter] AND all[filter] NOT anomalous[filter])'
     handle = Entrez.esearch(db='assembly', term=seacrh_term, retmax=1)
     record = Entrez.read(handle)
@@ -40,6 +50,19 @@ def search_fungi_id_by_name(especie: str):
 
 
 def check_ftp_file_existence(ftp_url, file_name):
+    """
+    The function `check_ftp_file_existence` checks if a file exists on an FTP
+    server given the FTP URL and file name.
+
+    :param ftp_url: The `ftp_url` parameter is a string that represents the URL of
+    the FTP server. It should follow the format
+    `ftp://<server_address>/<file_path>`, where `<server_address>` is the address
+    of the FTP server and `<file_path>` is the path to the directory where the file
+    :param file_name: The name of the file you want to check for existence on the
+    FTP server
+    :return: a boolean value indicating whether the specified file exists on the
+    FTP server.
+    """
     url_parts = urlparse(ftp_url)
     server_address = url_parts.netloc
     file_path = url_parts.path
@@ -60,7 +83,22 @@ def check_ftp_file_existence(ftp_url, file_name):
         return False
 
 
+
 def download_fasta_sequence_by_id(acession_number: str):
+    """
+    The `download_fasta_sequence_by_id` function downloads a FASTA sequence file
+    from a given accession number using the Entrez API.
+
+    :param acession_number: The `acession_number` parameter is a string that
+    represents the accession number of a genome assembly. This accession number is
+    used to search for and download the corresponding FASTA sequence file
+    :type acession_number: str
+    :return: The function `download_fasta_sequence_by_id` returns a tuple
+    containing two values. The first value is the path to the downloaded FASTA
+    file, and the second value is a boolean indicating whether the download was
+    successful or not. If there was an error during the download process, the
+    second value will be an error message.
+    """
     try:
         temp_genomes_path = os.path.join(os.getcwd(), 'temp_genomes')
 
