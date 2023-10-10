@@ -9,5 +9,3 @@ celery_app = Celery(
     broker=os.getenv('RABBIT_MQ_URL'),
     include=['plasticome.services.dbcan_service', 'plasticome.services.ecpred_service', 'plasticome.services.email_service' ]
     )
-
-celery_app.autodiscover_tasks()

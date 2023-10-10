@@ -18,7 +18,7 @@ def execute_main_pipeline(data: dict):
                 return {'ValidationError': 'You must have to send a valid email'}, 422
 
             user_name = data['user_name']
-            file_path, file_error = download_fasta_sequence_by_id.delay(
+            file_path, file_error = download_fasta_sequence_by_id(
                 data['fungi_id']
             )
             if file_error:
