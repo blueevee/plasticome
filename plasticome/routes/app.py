@@ -1,10 +1,18 @@
 from flask import Flask, request
+from flask_cors import CORS
 from flask_pydantic_spec import FlaskPydanticSpec
 
 from plasticome.controllers.fungi_controller import search_fungi_by_name
 from plasticome.controllers.pipeline_controller import execute_main_pipeline
 
+
+
+from plasticome.controllers.fungi_controller import search_fungi_by_name
+from plasticome.controllers.pipeline_controller import execute_main_pipeline
+
+
 server = Flask(__name__)
+CORS(server)
 spec = FlaskPydanticSpec(
     'flask', title='PLASTICOME DEMO', version='v1.0', path='docs'
 )
