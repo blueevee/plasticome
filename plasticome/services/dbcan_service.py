@@ -24,11 +24,6 @@ def run_dbcan_container(absolute_mount_dir):
     local_mount_dir = os.path.dirname(absolute_mount_dir)
     docker_mount = os.path.basename(local_mount_dir)
 
-    output_folder_name = f'{input_file.split(".")[0]}_results'
-    output_folder = os.path.join(local_mount_dir, output_folder_name)
-
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
 
     client = docker.from_env()
 
@@ -42,12 +37,12 @@ def run_dbcan_container(absolute_mount_dir):
             f'./{docker_mount}/{input_file}',
             'protein',
             '--out_dir',
-            f'./{docker_mount}/{output_folder_name}',
+            f'./{docker_mount}',
         ],
         'remove': True,
     }
     try:
         client.containers.run(**container_params)
-        return output_folder, False
+        return local_mount_dir, False
     except Exception as e:
         return False, f'[DBCAN STEP] - Unexpected error: {e}'
