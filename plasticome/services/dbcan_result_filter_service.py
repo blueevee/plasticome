@@ -21,8 +21,24 @@ def get_cazy_info():
         return set()
     return set(item['cazy_family'] for item in enzymes_info)
 
+def get_ec_numbers_info():
+    enzymes_info, error = get_all_enzymes(os.getenv('PLASTICOME_USER'), os.getenv('PLASTICOME_PASSWORD'))
+    if error:
+        return set()
+    return set(item['ec_number'] for item in enzymes_info)
+
 
 cazy_info_set = get_cazy_info()
+ec_info_set = get_ec_numbers_info()
+
+def check_ec_numbers(ec_numbers: str):
+    if len(ec_info_set) < 1:
+        return True
+
+    for number in str(ec_numbers).split('|'):
+        if number in ec_info_set:
+          return number
+    return False
 
 def check_cazy(families: str):
     """
@@ -56,7 +72,7 @@ def get_first_non_false(row):
 
 
 @celery_app.task
-def cazy_family_filter(dbcan_result: tuple):
+def dbcan_result_filter(dbcan_result: tuple):
     absolute_dir, _ = dbcan_result
     dbcan_files_to_delete = ['diamond.out', 'hmmer.out', 'eCAMI.out', 'uniInput']
 
@@ -75,6 +91,10 @@ def cazy_family_filter(dbcan_result: tuple):
         enzymes['plasticome_cazyme'] = enzymes.apply(get_first_non_false, axis=1)
         enzymes['in_db'] = enzymes['plasticome_cazyme'].apply(lambda cazy: True if cazy else False)
         gene_ids = enzymes.loc[enzymes['in_db'], 'Gene ID'].tolist()
+
+        enzymes['EC#'] = enzymes['EC#'].map(check_ec_numbers)
+
+        enzymes = enzymes.drop(columns=['#ofTools', 'HMMER', 'eCAMI', 'DIAMOND', 'in_db'])
         enzymes.to_csv(os.path.join(absolute_dir, 'overview.txt'), sep='\t', index=False)
         fasta_sequences = SeqIO.parse(open(protein_file_path),'fasta')
         filtered_sequences = [seq for seq in fasta_sequences if seq.id in gene_ids]
@@ -82,6 +102,3 @@ def cazy_family_filter(dbcan_result: tuple):
         return protein_file_path
     except Exception as e:
         return f"[CAZY FILTER] error: {str(e)}"
-
-
-
