@@ -8,7 +8,7 @@ from urllib.parse import urlparse
 from Bio import Entrez
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(override=True)
 
 Entrez.email = os.getenv('ENTREZ_EMAIL')
 
@@ -83,7 +83,6 @@ def check_ftp_file_existence(ftp_url, file_name):
         return False
 
 
-
 def download_fasta_sequence_by_id(acession_number: str):
     """
     The `download_fasta_sequence_by_id` function downloads a FASTA sequence file
@@ -100,7 +99,7 @@ def download_fasta_sequence_by_id(acession_number: str):
     second value will be an error message.
     """
     try:
-        temp_genomes_path = os.path.join(os.getcwd(), 'temp_genomes')
+        temp_genomes_path = os.path.join(os.getcwd(), 'temp_genomes', f'results_{acession_number}')
 
         if not os.path.exists(temp_genomes_path):
             os.makedirs(temp_genomes_path)
