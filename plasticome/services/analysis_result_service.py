@@ -92,7 +92,6 @@ def create_result_graphic(
         'Relação de enzimas que podem ser candidatas à degradação de plásticos.',
         loc='right',
     )
-    plt.tight_layout()
 
     image_path = os.path.join(absolute_dir, 'plasticome_result.png')
     plt.savefig(image_path, format='png')
