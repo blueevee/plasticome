@@ -1,5 +1,6 @@
-import docker
 import os
+
+import docker
 
 from plasticome.config.celery_config import celery_app
 

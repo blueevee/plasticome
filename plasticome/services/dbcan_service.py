@@ -1,5 +1,6 @@
-import docker
 import os
+
+import docker
 
 from plasticome.config.celery_config import celery_app
 
@@ -23,7 +24,6 @@ def run_dbcan_container(absolute_mount_dir):
     input_file = os.path.basename(absolute_mount_dir)
     local_mount_dir = os.path.dirname(absolute_mount_dir)
     docker_mount = os.path.basename(local_mount_dir)
-
 
     client = docker.from_env()
 

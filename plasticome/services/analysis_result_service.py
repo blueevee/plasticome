@@ -1,21 +1,23 @@
-import matplotlib.pyplot as plt
 import csv
 import os
+
+import matplotlib.pyplot as plt
 from dotenv import load_dotenv
 
 from plasticome.config.celery_config import celery_app
 from plasticome.services.plasticome_metadata_service import (
     get_all_enzymes,
-    get_all_plastics_with_enzymes,
     get_all_plastic_types_by_enzyme,
+    get_all_plastics_with_enzymes,
 )
-
 
 load_dotenv(override=True)
 
 
 def get_enzymes_info():
-    enzymes_info, error = get_all_enzymes(os.getenv('PLASTICOME_USER'), os.getenv('PLASTICOME_PASSWORD'))
+    enzymes_info, error = get_all_enzymes(
+        os.getenv('PLASTICOME_USER'), os.getenv('PLASTICOME_PASSWORD')
+    )
     if error:
         return {}
     print()
@@ -32,32 +34,64 @@ def get_enzymes_info():
 
 
 def get_plastics_info():
-    plastics_info, error = get_all_plastics_with_enzymes(os.getenv('PLASTICOME_USER'), os.getenv('PLASTICOME_PASSWORD'))
+    plastics_info, error = get_all_plastics_with_enzymes(
+        os.getenv('PLASTICOME_USER'), os.getenv('PLASTICOME_PASSWORD')
+    )
     if error:
         return set()
     return set(item['plastic_acronym'] for item in plastics_info)
 
-def create_result_graphic(absolute_dir: str, aimed_enzymes: dict, all_plastics_set:set):
+
+def create_result_graphic(
+    absolute_dir: str, aimed_enzymes: dict, all_plastics_set: set
+):
 
     enzyme_names = list(aimed_enzymes.keys())
     plastics_relations = [aimed_enzymes[enzyme] for enzyme in aimed_enzymes]
 
-
-    _, ax = plt.subplots(figsize=(12, int(len(enzyme_names)/5 * 1.4)))
-    colors = {plastic: plt.cm.viridis(i / len(all_plastics_set)) for i, plastic in enumerate(all_plastics_set)}
+    _, ax = plt.subplots(figsize=(12, int(len(enzyme_names) / 5 * 1.4) + 1.5))
+    colors = {
+        plastic: plt.cm.viridis(i / len(all_plastics_set))
+        for i, plastic in enumerate(all_plastics_set)
+    }
 
     for i, plastics in enumerate(plastics_relations):
         y_pos = [i] * len(plastics)
-        ax.scatter(plastics, y_pos, color=[colors[p] for p in plastics], s=100, label=enzyme_names[i])
+        ax.scatter(
+            plastics,
+            y_pos,
+            color=[colors[p] for p in plastics],
+            s=100,
+            label=enzyme_names[i],
+        )
 
     ax.set_yticks(range(len(enzyme_names)))
     ax.set_yticklabels(enzyme_names)
-    ax.set_xlabel("Plásticos com possibilidade de degradação")
+    ax.set_xlabel('Plásticos com possibilidade de degradação')
 
-    handles = [plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=colors[p], markersize=10, label=p) for p in all_plastics_set]
-    ax.legend(handles=handles, title="Tipos de plástico testados", loc='center left', bbox_to_anchor=(1, 0.5))
+    handles = [
+        plt.Line2D(
+            [0],
+            [0],
+            marker='o',
+            color='w',
+            markerfacecolor=colors[p],
+            markersize=10,
+            label=p,
+        )
+        for p in all_plastics_set
+    ]
+    ax.legend(
+        handles=handles,
+        title='Tipos de plástico testados',
+        loc='center left',
+        bbox_to_anchor=(1, 0.5),
+    )
 
-    plt.title("Relação de enzimas que podem ser candidatas à degradação de plásticos.", loc='right')
+    plt.title(
+        'Relação de enzimas que podem ser candidatas à degradação de plásticos.',
+        loc='right',
+    )
     plt.tight_layout()
 
     image_path = os.path.join(absolute_dir, 'plasticome_result.png')
@@ -65,7 +99,6 @@ def create_result_graphic(absolute_dir: str, aimed_enzymes: dict, all_plastics_s
     plt.close()
 
     return image_path
-
 
 
 @celery_app.task
@@ -77,9 +110,11 @@ def create_result(ec_pred_output: tuple):
 
     ####### INIT: [LENDO RESULTADOS EC_PRED]
     for filename in os.listdir(absolute_dir):
-        if filename.endswith(".tsv"):
+        if filename.endswith('.tsv'):
             ec_pred_file_path = os.path.join(absolute_dir, filename)
-    with open(ec_pred_file_path, mode='r', newline='', encoding='utf-8') as file_ec_pred:
+    with open(
+        ec_pred_file_path, mode='r', newline='', encoding='utf-8'
+    ) as file_ec_pred:
         reader = csv.DictReader(file_ec_pred, delimiter='\t')
 
         for row in reader:
@@ -87,12 +122,21 @@ def create_result(ec_pred_output: tuple):
             ec_number = row['EC Number']
             aimed_enzymes[protein_id] = []
             if ec_number in enzymes_info.keys():
-                plastic_types, _ = get_all_plastic_types_by_enzyme(os.getenv('PLASTICOME_USER'), os.getenv('PLASTICOME_PASSWORD'), enzymes_info[ec_number])
+                plastic_types, _ = get_all_plastic_types_by_enzyme(
+                    os.getenv('PLASTICOME_USER'),
+                    os.getenv('PLASTICOME_PASSWORD'),
+                    enzymes_info[ec_number],
+                )
                 aimed_enzymes[protein_id].extend(plastic_types)
     ####### END: [LENDO RESULTADOS EC_PRED]
 
     ####### INIT: [LENDO RESULTADOS DBCAN]
-    with open(os.path.join(absolute_dir, 'overview.txt'), mode='r', newline='', encoding='utf-8') as file_dbcan:
+    with open(
+        os.path.join(absolute_dir, 'overview.txt'),
+        mode='r',
+        newline='',
+        encoding='utf-8',
+    ) as file_dbcan:
         reader = csv.DictReader(file_dbcan, delimiter='\t')
 
         for row in reader:
@@ -100,17 +144,25 @@ def create_result(ec_pred_output: tuple):
             cazy_family = row['plasticome_cazyme']
             dbcan_ec_number = row['EC#']
 
-            gene_info = cazy_family if dbcan_ec_number == "False" else dbcan_ec_number
+            gene_info = (
+                cazy_family if dbcan_ec_number == 'False' else dbcan_ec_number
+            )
             if gene_info in enzymes_info.keys():
-                plastic_types, _ = get_all_plastic_types_by_enzyme(os.getenv('PLASTICOME_USER'), os.getenv('PLASTICOME_PASSWORD'), enzymes_info[gene_info])
+                plastic_types, _ = get_all_plastic_types_by_enzyme(
+                    os.getenv('PLASTICOME_USER'),
+                    os.getenv('PLASTICOME_PASSWORD'),
+                    enzymes_info[gene_info],
+                )
                 for key in aimed_enzymes:
                     if gene_id in key:
                         aimed_enzymes[key].extend(plastic_types)
     ####### END: [LENDO RESULTADOS DBCAN]
 
-    clean_enzymes_data = {key: value for key, value in aimed_enzymes.items() if value}
+    clean_enzymes_data = {
+        key: value for key, value in aimed_enzymes.items() if value
+    }
     if len(clean_enzymes_data) < 1:
-        negative_result =  f"""
+        negative_result = f"""
             Gostaríamos de informar que concluímos a análise das enzimas em relação à degradação de plásticos, até o momento, nossa análise está focada nos seguintes tipos de plástico: {all_plastics_set}.
 
             Dito isso, nesta análise, não encontramos nenhuma enzima que tenha uma relação identificável com esses tipos específicos de plástico. Embora isso possa ser desapontador, é importante destacar que a pesquisa nesse campo continua evoluindo, e novas descobertas podem surgir no futuro.
@@ -119,6 +171,7 @@ def create_result(ec_pred_output: tuple):
         """
         return absolute_dir, negative_result
 
-    image_path = create_result_graphic(absolute_dir, clean_enzymes_data, all_plastics_set)
+    image_path = create_result_graphic(
+        absolute_dir, clean_enzymes_data, all_plastics_set
+    )
     return image_path, False
-
