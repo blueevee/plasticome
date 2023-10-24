@@ -2,6 +2,7 @@
 temp_genomes/
 results/
 .vscode/
+dockerfile-old
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/

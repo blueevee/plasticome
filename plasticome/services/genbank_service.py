@@ -8,7 +8,7 @@ from urllib.parse import urlparse
 from Bio import Entrez
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(override=True)
 
 Entrez.email = os.getenv('ENTREZ_EMAIL')
 
@@ -49,7 +49,7 @@ def search_fungi_id_by_name(especie: str):
         return None, None
 
 
-def check_ftp_file_existence(ftp_url, file_name):
+def check_ftp_file_existence(ftp_url: str, file_name: str):
     """
     The function `check_ftp_file_existence` checks if a file exists on an FTP
     server given the FTP URL and file name.
@@ -83,24 +83,26 @@ def check_ftp_file_existence(ftp_url, file_name):
         return False
 
 
-
 def download_fasta_sequence_by_id(acession_number: str):
     """
-    The `download_fasta_sequence_by_id` function downloads a FASTA sequence file
-    from a given accession number using the Entrez API.
+    The function `download_fasta_sequence_by_id` downloads a FASTA sequence file
+    from an FTP server using an accession number and returns the file path,
+    organism name, and any errors encountered.
 
     :param acession_number: The `acession_number` parameter is a string that
-    represents the accession number of a genome assembly. This accession number is
-    used to search for and download the corresponding FASTA sequence file
-    :type acession_number: str
-    :return: The function `download_fasta_sequence_by_id` returns a tuple
-    containing two values. The first value is the path to the downloaded FASTA
-    file, and the second value is a boolean indicating whether the download was
-    successful or not. If there was an error during the download process, the
-    second value will be an error message.
+    represents the accession number of a genome assembly. It is used to search for
+    and download the FASTA sequence file for that specific assembly
+    :return: The function `download_fasta_sequence_by_id` returns three values:
+    1. `fasta_output_path`: The path to the downloaded FASTA file.
+    2. `full_organism_name`: The full name of the organism associated with the
+    accession number.
+    3. `False`: A boolean value indicating whether the download was successful or
+    not.
     """
     try:
-        temp_genomes_path = os.path.join(os.getcwd(), 'temp_genomes')
+        temp_genomes_path = os.path.join(
+            os.getcwd(), 'temp_genomes', f'results_{acession_number}'
+        )
 
         if not os.path.exists(temp_genomes_path):
             os.makedirs(temp_genomes_path)
@@ -123,6 +125,10 @@ def download_fasta_sequence_by_id(acession_number: str):
         handle = Entrez.esummary(db='assembly', id=assembly_id)
         record = Entrez.read(handle)
         handle.close()
+
+        full_organism_name = record['DocumentSummarySet']['DocumentSummary'][
+            0
+        ]['AssemblyName']
 
         ftp_url = record['DocumentSummarySet']['DocumentSummary'][0].get(
             'FtpPath_RefSeq'
@@ -159,7 +165,7 @@ def download_fasta_sequence_by_id(acession_number: str):
 
         os.remove(fasta_folder_path)
 
-        return fasta_output_path, False
+        return fasta_output_path, full_organism_name, False
 
     except Exception as error:
-        return False, error
+        return False, False, error
