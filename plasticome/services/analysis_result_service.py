@@ -94,7 +94,7 @@ def create_result_graphic(
     )
 
     image_path = os.path.join(absolute_dir, 'plasticome_result.png')
-    plt.savefig(image_path, format='png')
+    plt.savefig(image_path, format='png',bbox_inches='tight',dpi=100)
     plt.close()
 
     return image_path

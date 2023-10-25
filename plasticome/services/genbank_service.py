@@ -128,7 +128,7 @@ def download_fasta_sequence_by_id(acession_number: str):
 
         full_organism_name = record['DocumentSummarySet']['DocumentSummary'][
             0
-        ]['AssemblyName']
+        ]['SpeciesName']
 
         ftp_url = record['DocumentSummarySet']['DocumentSummary'][0].get(
             'FtpPath_RefSeq'
