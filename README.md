@@ -1,8 +1,19 @@
+[tag1-image]: https://img.shields.io/badge/-1.0.0-purple
+
+[python-image]:https://img.shields.io/badge/python-^3.10-yellow
+[poetry-image]: https://img.shields.io/badge/poetry-^1.5.1-blue
+
+
 # 🍄 PLASTICOME 🍄
+![1.0.0][python-image] ![1.0.0][poetry-image]
 ### Essa é uma ferramenta para identificar genes que possuem a capacidade de degradar plástico no genoma de um fungo.
 
 ## 💙 Notas da desenvolvedora:
 Esse projeto foi desenvolvido em ambiente windows 10 com python 3.11, pode precisar de ajustes ao ser executada em um ambiente diferente
+
+### Versões
+>![1.0.0][tag1-image] `07/11/2023`
+> Plasticome funcionando apenas com dbCAN e ecPred, encontra muitas enzimas já que a comparação com a cazy family e ec numbers é bem ampla, mas já funciona!
 
 ## 🔍Escolhas para o ambiente de desenvolvimento:
 > ### Poetry
