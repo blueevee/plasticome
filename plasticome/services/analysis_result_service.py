@@ -129,34 +129,6 @@ def create_result(ec_pred_output: tuple):
                 aimed_enzymes[protein_id].extend(plastic_types)
     ####### END: [LENDO RESULTADOS EC_PRED]
 
-    ####### INIT: [LENDO RESULTADOS DBCAN]
-    with open(
-        os.path.join(absolute_dir, 'overview.txt'),
-        mode='r',
-        newline='',
-        encoding='utf-8',
-    ) as file_dbcan:
-        reader = csv.DictReader(file_dbcan, delimiter='\t')
-
-        for row in reader:
-            gene_id = row['Gene ID']
-            cazy_family = row['plasticome_cazyme']
-            dbcan_ec_number = row['EC#']
-
-            gene_info = (
-                cazy_family if dbcan_ec_number == 'False' else dbcan_ec_number
-            )
-            if gene_info in enzymes_info.keys():
-                plastic_types, _ = get_all_plastic_types_by_enzyme(
-                    os.getenv('PLASTICOME_USER'),
-                    os.getenv('PLASTICOME_PASSWORD'),
-                    enzymes_info[gene_info],
-                )
-                for key in aimed_enzymes:
-                    if gene_id in key:
-                        aimed_enzymes[key].extend(plastic_types)
-    ####### END: [LENDO RESULTADOS DBCAN]
-
     clean_enzymes_data = {
         key: value for key, value in aimed_enzymes.items() if value
     }
