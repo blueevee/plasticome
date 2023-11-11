@@ -38,7 +38,9 @@ def execute_main_pipeline(data: dict):
                 run_dbcan_container.si(file_path),
                 dbcan_result_filter.s(),
                 run_ecpred_container.s(),
-                create_result.s(),
+                # Filtro do ec-pred
+                # rodar blast
+                create_result.s(), #Alterar resultados para analisar a saída do blast
                 send_email_with_results.s(email_message_data),
             )()
 
