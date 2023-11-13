@@ -138,7 +138,7 @@ def dbcan_result_filter(dbcan_result: tuple):
         enzymes['in_db'] = enzymes['plasticome_cazyme'].apply(
             lambda cazy: True if cazy else False
         )
-        gene_ids = enzymes.loc[enzymes['in_db'], 'Gene ID'].tolist()
+        gene_ids_to_keep = enzymes.loc[enzymes['in_db'], 'Gene ID'].tolist()
 
         enzymes['EC#'] = enzymes['EC#'].map(check_ec_numbers)
 
@@ -150,7 +150,7 @@ def dbcan_result_filter(dbcan_result: tuple):
         )
         fasta_sequences = SeqIO.parse(open(protein_file_path), 'fasta')
         filtered_sequences = [
-            seq for seq in fasta_sequences if seq.id in gene_ids
+            seq for seq in fasta_sequences if seq.id in gene_ids_to_keep
         ]
         SeqIO.write(filtered_sequences, open(protein_file_path, 'w'), 'fasta')
         return protein_file_path

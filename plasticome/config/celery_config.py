@@ -14,5 +14,7 @@ celery_app = Celery(
         'plasticome.services.email_service',
         'plasticome.services.dbcan_result_filter_service',
         'plasticome.services.analysis_result_service',
+        'plasticome.services.blast_service',
+        'plasticome.services.ecpred_result_filter_service',
     ],
 )

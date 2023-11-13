@@ -1,8 +1,12 @@
 from celery import chain
 
 from plasticome.services.analysis_result_service import create_result
+from plasticome.services.blast_service import align_with_blastdb
 from plasticome.services.dbcan_result_filter_service import dbcan_result_filter
 from plasticome.services.dbcan_service import run_dbcan_container
+from plasticome.services.ecpred_result_filter_service import (
+    ecpred_result_filter,
+)
 from plasticome.services.ecpred_service import run_ecpred_container
 from plasticome.services.email_service import send_email_with_results
 from plasticome.services.genbank_service import download_fasta_sequence_by_id
@@ -38,13 +42,11 @@ def execute_main_pipeline(data: dict):
                 run_dbcan_container.si(file_path),
                 dbcan_result_filter.s(),
                 run_ecpred_container.s(),
-                # Filtro do ec-pred
-                # rodar blast
-                create_result.s(), #Alterar resultados para analisar a saída do blast
+                ecpred_result_filter.s(),
+                align_with_blastdb.s(),
+                create_result.s(),
                 send_email_with_results.s(email_message_data),
             )()
-
-            # TODO [CELERY] SIMULTANEO RODAR O BLAST COM O PLASTICOME-ENZYMES E A SEQUENCIA
             return {
                 'message': 'Analysis is in progress, the result will be sent by email'
             }, 200
