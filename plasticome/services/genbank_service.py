@@ -5,7 +5,7 @@ import urllib.request
 from ftplib import FTP
 from urllib.parse import urlparse
 
-from Bio import Entrez
+from Bio import Entrez, SeqIO
 from dotenv import load_dotenv
 
 load_dotenv(override=True)
@@ -169,3 +169,22 @@ def download_fasta_sequence_by_id(acession_number: str):
 
     except Exception as error:
         return False, False, error
+
+
+def get_protein_name(genbank_id: str):
+    """
+    The function `get_protein_name` retrieves the protein name from a GenBank ID.
+
+    :param genbank_id: The `genbank_id` parameter is a string that represents the
+    unique identifier of a protein in the GenBank database
+    :type genbank_id: str
+    :return: the protein name associated with the given GenBank ID.
+    """
+
+    handle = Entrez.efetch(
+        db='protein', id=genbank_id, rettype='gb', retmode='text'
+    )
+    record = SeqIO.read(handle, 'genbank')
+    handle.close()
+    protein_name = record.description
+    return protein_name

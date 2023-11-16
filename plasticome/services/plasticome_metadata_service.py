@@ -26,6 +26,24 @@ def get_all_enzymes(username: str, secret: str):
     return False, data
 
 
+def get_all_enzymes_by_ec_number(username: str, secret: str, ec_number: str):
+
+    token, error = authenticate_user(username, secret)
+    if error:
+        return False, True
+
+    headers = {'Authorization': f'Bearer {token}'}
+    response = requests.get(
+        f'{os.getenv("PLASTICOME_METADATA_URL")}/enzyme_find/ec/{ec_number}',
+        headers=headers,
+    )
+
+    data = response.json()
+    if response.status_code == 200:
+        return data, False
+    return False, data
+
+
 def get_all_plastics_with_enzymes(username: str, secret: str):
 
     token, error = authenticate_user(username, secret)

@@ -39,7 +39,7 @@ def run_ecpred_container(absolute_mount_dir):
             f'./{docker_mount}/{input_file}',
             './',
             '/temp',
-            f'./{docker_mount}/{input_file}.tsv',
+            f'./{docker_mount}/ec_pred_results.tsv',
         ],
         'remove': True,
     }

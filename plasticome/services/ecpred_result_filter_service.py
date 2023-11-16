@@ -43,7 +43,7 @@ def ecpred_result_filter(ec_pred_output: tuple):
 
     try:
         for filename in os.listdir(absolute_result_dir):
-            if filename.endswith('.tsv'):
+            if filename == 'ec_pred_results.tsv':
                 ec_pred_file_path = os.path.join(absolute_result_dir, filename)
 
             if filename.endswith('.faa'):
@@ -54,9 +54,6 @@ def ecpred_result_filter(ec_pred_output: tuple):
         predicted_ecs['EC Number'] = predicted_ecs['EC Number'].map(
             check_ec_numbers
         )
-        predicted_ecs['Protein ID'] = (
-            predicted_ecs['Protein ID'].str.split().str[0]
-        )
         predicted_ecs['in_db'] = predicted_ecs['EC Number'].apply(
             lambda ec: True if ec else False
         )
@@ -65,11 +62,12 @@ def ecpred_result_filter(ec_pred_output: tuple):
             predicted_ecs['in_db'], 'Protein ID'
         ].tolist()
 
+        gene_ids_to_keep = [gene.split()[0] for gene in gene_ids_to_keep]
         fasta_sequences = SeqIO.parse(open(protein_file_path), 'fasta')
         filtered_sequences = [
             seq for seq in fasta_sequences if seq.id in gene_ids_to_keep
         ]
         SeqIO.write(filtered_sequences, open(protein_file_path, 'w'), 'fasta')
-        return protein_file_path
+        return protein_file_path, ec_pred_file_path, False
     except Exception as e:
-        return f'[EC PRED FILTER] error: {str(e)}'
+        return False, False, f'[EC PRED FILTER] error: {str(e)}'
