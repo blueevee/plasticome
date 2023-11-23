@@ -83,4 +83,4 @@ def send_email_with_results(results: tuple, user_data: dict):
         shutil.rmtree(absolute_dir)
         return True, False
     except Exception as e:
-        return False, f'Erro ao enviar e-mail: {e}'
+        return False, f'Erro ao enviar e-mail: {str(e)}'

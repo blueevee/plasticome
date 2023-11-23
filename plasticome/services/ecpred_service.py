@@ -47,4 +47,4 @@ def run_ecpred_container(absolute_mount_dir):
         client.containers.run(**container_params)
         return local_mount_dir, False
     except Exception as e:
-        return False, f'[ECPRED STEP] - Unexpected error: {e}'
+        return False, f'[ECPRED STEP] - Unexpected error: {str(e)}'

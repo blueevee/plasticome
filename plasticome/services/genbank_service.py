@@ -79,7 +79,7 @@ def check_ftp_file_existence(ftp_url: str, file_name: str):
         return file_exists
 
     except Exception as e:
-        print(f'Error checking FTP file existence: {e}')
+        print(f'Error checking FTP file existence: {str(e)}')
         return False
 
 
@@ -163,12 +163,11 @@ def download_fasta_sequence_by_id(acession_number: str):
             with open(fasta_output_path, 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
 
-        os.remove(fasta_folder_path)
 
         return fasta_output_path, full_organism_name, False
 
     except Exception as error:
-        return False, False, error
+        return False, False, str(error)
 
 
 def get_protein_name(genbank_id: str):
