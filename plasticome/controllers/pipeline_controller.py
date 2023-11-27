@@ -30,7 +30,7 @@ def execute_main_pipeline(data: dict):
                 file_error,
             ) = download_fasta_sequence_by_id(data['fungi_id'])
             if file_error:
-                return {'error': file_error}, 500
+                return {'error': f'[FILE ERROR]: {file_error}'}, 500
 
             email_message_data = {
                 'user_email': user_email,
@@ -58,4 +58,4 @@ def execute_main_pipeline(data: dict):
                 'ValidationError': f'Incomplete model, missing fields: {", ".join(missing_fields)}'
             }, 422
     except Exception as e:
-        return {'error': f'[EXECUTE PIPELINE] - {e}'}, 400
+        return {'error': f'[EXECUTE PIPELINE] - {str(e)}'}, 400

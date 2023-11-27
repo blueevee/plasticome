@@ -37,7 +37,7 @@ def get_plastics_info():
     )
     if error:
         return set()
-    return set(item['plastic_acronym'] for item in plastics_info)
+    return set(item['plastic_name'] for item in plastics_info)
 
 
 def create_graphic_enzyme_plastic_relation(
