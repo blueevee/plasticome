@@ -7,10 +7,10 @@
 
 # 🍄 PLASTICOME 🍄
 ![1.0.0][python-image] ![1.0.0][poetry-image] ![1.0.0][blast-image]
-### Essa é uma ferramenta para identificar genes que possuem a capacidade de degradar plástico no genoma de um fungo.
+### Essa é uma ferramenta para identificar genes que possuem a capacidade de degradar plástico no genoma de um fungo. Ela é composta por uma pelo back-end que se caracteriza por essa API, um front-end [plasticome-frontend](https://github.com/blueevee/plasticome-frontend), e uma api que lida com as informações a serem registradas/consultadas no banco de dados [plasticome-metadata](https://github.com/blueevee/plasticome-metadata)
 
 ## 💙 Notas da desenvolvedora:
-Esse projeto foi desenvolvido em ambiente windows 10 com python 3.11, pode precisar de ajustes ao ser executada em um ambiente diferente
+Esse projeto foi desenvolvido em ambiente windows 10 com python 3.11, pode precisar de ajustes ao ser executado em um ambiente diferente
 
 ### Versões
 >![1.0.0][tag1-image] `07/11/2023`
@@ -35,10 +35,11 @@ Esse projeto foi desenvolvido em ambiente windows 10 com python 3.11, pode preci
 ## 😎 Quero mexer nesse projeto preciso de que?
 1. Certifique-se de ter o python 3.10+
 2. Tenha o blast instalado e adicione o caminho para a pasta `\bin` na variável de ambiente `BLAST_PATH`
-2. Tenha o gerenciador de pacotes do poetry instalado (pode usar outro e instalar as bibliotecas manualmente, mas recomendo fortemente o poetry)
-2. Crie o ambiente virtual do poetry na raiz do projeto com `poetry shell`
-2. Instale as dependências com `poetry install`
-2. Seja feliz e pode brincar com o plasticome!
+3. Tenha o gerenciador de pacotes do poetry instalado (pode usar outro e instalar as bibliotecas manualmente, mas recomendo fortemente o poetry)
+4. Crie o ambiente virtual do poetry na raiz do projeto com `poetry shell`
+5. Instale as dependências com `poetry install`
+6. Tenha o docker instalado, pois as imagens do Dbcan e ECPred precisam dele para executar.
+7. Seja feliz e pode brincar com o plasticome!
 
 ## 🔍 Comandos importantes para o desenvolvimento:
 `task - l`: Comando do taskipy para listar as tarefas configuradas
@@ -50,3 +51,9 @@ Esse projeto foi desenvolvido em ambiente windows 10 com python 3.11, pode preci
 `task teste`: Executa os testes da aplicação
 
 `task run`: Executa o servidor flask
+
+## 🧾 TO DO list para a eu do futuro:
+- [X] Adicionar o predição de `Ec numbers`
+- [ ] Melhorar  a documentação
+- [ ] Criar um container docker para publicar essa api online
+- [ ] Adicionar SignalP na esteira de análise

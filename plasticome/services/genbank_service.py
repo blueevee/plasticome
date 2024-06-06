@@ -169,7 +169,6 @@ def download_fasta_sequence_by_id(acession_number: str):
     except Exception as error:
         return False, False, str(error)
 
-
 def get_protein_name(genbank_id: str):
     """
     The function `get_protein_name` retrieves the protein name from a GenBank ID.
