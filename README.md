@@ -39,6 +39,8 @@ Esse projeto foi desenvolvido em ambiente windows 10 com python 3.11, pode preci
 4. Crie o ambiente virtual do poetry na raiz do projeto com `poetry shell`
 5. Instale as dependências com `poetry install`
 6. Tenha o docker instalado, pois as imagens do Dbcan e ECPred precisam dele para executar.
+6. Duplique o arquivo [.env.example](/plasticome-backend/.env.example).
+7. Apaque o sufixo `.example` e preencha nessa arquivo todas as informações necessárias.
 7. Seja feliz e pode brincar com o plasticome!
 
 ## 🔍 Comandos importantes para o desenvolvimento:
